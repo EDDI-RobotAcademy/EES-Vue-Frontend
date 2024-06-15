@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import { useStore } from 'vuex'
 
 const authenticationModule = 'authenticationModule'
@@ -53,23 +52,12 @@ const authenticationModule = 'authenticationModule'
 export default {
     setup () {
         const store = useStore()
-        const username = ref('')
-        const password = ref('')
-        const autoLogin = ref(false) // 초기 상태를 false로 설정
-
-        const login = () => {
-            // 로그인 로직
-        }
 
         const goToKakaoLogin = async () => {
             await store.dispatch("authenticationModule/requestKakaoOauthRedirectionToDjango")
         }
 
         return {
-            username,
-            password,
-            autoLogin,
-            login,
             goToKakaoLogin
         }
     }
