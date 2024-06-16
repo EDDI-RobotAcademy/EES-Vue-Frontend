@@ -4,8 +4,10 @@
 
 <script>
 import { mapActions } from 'vuex'
+
 const authenticationModule = 'authenticationModule'
 const accountModule = 'accountModule'
+
 export default {
     methods: {
         // ...mapActions(authenticationModule, ['requestAccessTokenToDjangoRedirection', 'requestUserInfoToDjango']),
