@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import reviewModule from "@/review/store/reviewModule"
+import authenticationModule from '@/authentication/store/authenticationModule'
 
 export default createStore({
   state: {
@@ -11,6 +12,7 @@ export default createStore({
   actions: {
   },
   modules: {
-    reviewModule
+    reviewModule,
+    authenticationModule,
   }
 })
