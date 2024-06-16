@@ -16,9 +16,6 @@
     <v-btn text @click="goToReviewList" class="btn-text">
       <span>REVIEW</span>
     </v-btn>
-    <v-btn text @click="goToCategories" class="btn-text">
-      <span>CATEGORIES</span>
-    </v-btn>
     <v-btn text @click="goToContact" class="btn-text">
       <span>CONTACT</span>
     </v-btn>
@@ -53,9 +50,6 @@ export default {
     },
     goToReviewList() {
       router.push("/review/list");
-    },
-    goToCategories() {
-      router.push("/categories");
     },
     goToContact() {
       router.push("/contact");

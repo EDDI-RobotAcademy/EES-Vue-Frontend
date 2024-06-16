@@ -12,7 +12,7 @@ const actions: ReviewActions = {
     async requestReviewListToDjango(context: ActionContext<ReviewState, any>): Promise<void> {
         try {
             const res: AxiosResponse<any, any> =
-                await axiosInst.djangoAxiosInst.get('/review/list/')
+                await axiosInst.djangoAxiosInst.get('/review/list')
 
             const data: Review[] = res.data
             context.commit(REQUEST_REVIEW_LIST_TO_DJANGO, data)
