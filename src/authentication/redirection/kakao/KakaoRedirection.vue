@@ -9,8 +9,12 @@ const authenticationModule = 'authenticationModule'
 
 export default {
     methods: {
+        ...mapActions(authenticationModule, 
+            ['requestAccessTokenToDjangoRedirection']),
         async setRedirectData () {
             const code = this.$route.query.code
+
+            await this.requestAccessTokenToDjangoRedirection({ code })
             console.log('code:', code)
         }
     },
