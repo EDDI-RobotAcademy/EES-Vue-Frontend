@@ -5,6 +5,7 @@ import axiosInst from "@/utility/axiosInstance"
 
 export type AuthenticationActions = {
     requestKakaoOauthRedirectionToDjango(): Promise<void>
+    requestAccessTokenToDjangoRedirection(context: ActionContext<AuthenticationState, any>, payload: { code: string }): Promise<void>
 }
 
 const actions: AuthenticationActions = {
@@ -14,6 +15,19 @@ const actions: AuthenticationActions = {
                 res.data.url)
             window.location.href = res.data.url
         })
+    },
+    async requestAccessTokenToDjangoRedirection(context: ActionContext<AuthenticationState, any>, payload: { code: string }): Promise<void> {
+        try {
+            console.log('requestAccessTokenToDjangoRedirection()')
+            const { code } = payload
+
+            const response = await axiosInst.djangoAxiosInst.post(
+                '/kakao_oauth/kakao/access-token', { code })
+            localStorage.setItem("accessToken", response.data.accessToken.access_token)
+        } catch (error) {
+            console.log('Access Token 요청 중 문제 발생:', error)
+            throw error
+        }
     },
 };
 
