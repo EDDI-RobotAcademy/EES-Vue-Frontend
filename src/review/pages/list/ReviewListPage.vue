@@ -15,10 +15,10 @@
           </v-btn>
           <v-btn
             class="toggle-btn"
-            :class="{ 'active-btn': selectedToggle === '스펙 리뷰' }"
-            @click="selectedToggle = '스펙 리뷰'"
+            :class="{ 'active-btn': selectedToggle === '스태프 리뷰' }"
+            @click="selectedToggle = '스태프 리뷰'"
           >
-            스펙 리뷰
+            스태프 리뷰
           </v-btn>
         </v-btn-toggle>
       </v-col>
