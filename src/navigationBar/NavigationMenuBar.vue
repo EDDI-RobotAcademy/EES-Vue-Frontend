@@ -6,15 +6,15 @@
       </v-btn>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    
+
     <v-btn text @click="goToProductList" class="btn-text">
       <span>PRODUCTS</span>
     </v-btn>
-    <v-btn text @click="goToBoardList" class="btn-text">
+    <v-btn text class="btn-text">
       <span>BOARDS</span>
     </v-btn>
-    <v-btn text @click="goToReviewers" class="btn-text">
-      <span>REVIEWERS</span>
+    <v-btn text @click="goToReviewList" class="btn-text">
+      <span>REVIEW</span>
     </v-btn>
     <v-btn text @click="goToCategories" class="btn-text">
       <span>CATEGORIES</span>
@@ -32,43 +32,43 @@
 </template>
 
 <script>
-import '@mdi/font/css/materialdesignicons.css'
-import router from '@/router'
+import "@mdi/font/css/materialdesignicons.css";
+import router from "@/router";
 
 export default {
-  data () {
+  data() {
     return {
       isLogin: false,
-    }
+    };
   },
   methods: {
-    goToHome () {
-      router.push('/')
+    goToHome() {
+      router.push("/");
     },
-    goToProductList () {
-      router.push('/product/list')
+    goToProductList() {
+      router.push("/product/list");
     },
-    goToBoardList () {
-      router.push('/board/list')
+    goToBoardList() {
+      router.push("/board/list");
     },
-    goToReviewers () {
-      router.push('/reviewers')
+    goToReviewList() {
+      router.push("/review/list");
     },
-    goToCategories () {
-      router.push('/categories')
+    goToCategories() {
+      router.push("/categories");
     },
-    goToContact () {
-      router.push('/contact')
+    goToContact() {
+      router.push("/contact");
     },
-    signIn () {
-      router.push('/account/login')
+    signIn() {
+      router.push("/account/login");
     },
-    signOut () {
-      this.isLogin = false
-      router.push('/')
-    }
-  }
-}
+    signOut() {
+      this.isLogin = false;
+      router.push("/");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -93,7 +93,12 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
 }
 
 .v-btn:hover .btn-text {
