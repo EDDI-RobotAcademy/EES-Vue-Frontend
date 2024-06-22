@@ -37,9 +37,10 @@ const actions: AuthenticationActions = {
 
             const userInfoResponse: AxiosResponse<any> =
                 await axiosInst.djangoAxiosInst.post('/kakao_oauth/kakao/user-info', { access_token: accessToken })
-            console.log('userInfoReponse: ', userInfoResponse.data.user_info)
+            console.log('User Info: ', userInfoResponse.data.user_info)
 
-            return userInfoResponse.data.user_info
+            const userInfo = userInfoResponse.data.user_info
+            return userInfo
         } catch (error) {
             alert('사용자 정보 가져오기 실패')
             throw error
