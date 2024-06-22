@@ -6,6 +6,7 @@ import axiosInst from "@/utility/axiosInstance"
 export type AuthenticationActions = {
     requestKakaoOauthRedirectionToDjango(): Promise<void>
     requestAccessTokenToDjangoRedirection(context: ActionContext<AuthenticationState, any>, payload: { code: string }): Promise<void>
+    requestUserInfoToDjango(context: ActionContext<AuthenticationState, any>): Promise<any>
 }
 
 const actions: AuthenticationActions = {
@@ -29,6 +30,21 @@ const actions: AuthenticationActions = {
             throw error
         }
     },
+    async requestUserInfoToDjango(context: ActionContext<AuthenticationState, any>): Promise<any> {
+        try {
+            const accessToken = localStorage.getItem("accessToken")
+            console.log('accessToken: ', accessToken)
+
+            const userInfoResponse: AxiosResponse<any> =
+                await axiosInst.djangoAxiosInst.post('/kakao_oauth/kakao/user-info', { access_token: accessToken })
+            console.log('userInfoReponse: ', userInfoResponse.data.user_info)
+
+            return userInfoResponse.data.user_info
+        } catch (error) {
+            alert('사용자 정보 가져오기 실패')
+            throw error
+        }
+    }
 };
 
 export default actions;
