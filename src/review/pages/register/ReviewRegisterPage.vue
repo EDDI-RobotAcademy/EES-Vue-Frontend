@@ -23,3 +23,33 @@
         </v-row>
     </v-container>
 </template>
+
+<script>
+import { mapActions } from 'vuex'
+const reviewModule = 'reviewModule'
+export default {
+    data () {
+        return {
+            title: '',
+            writer: '',
+            content: '',
+        }
+    },
+    methods: {
+        ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
+        async onSubmit () {
+            console.log('작성 완료 버튼 눌럿지 ?')
+            const payload = {
+                title: this.title,
+                writer: this.writer,
+                content: this.content,
+            }
+            console.log('payload check:', payload)
+            const board = await this.requestCreateReviewToDjango(payload)
+        },
+        async onCancel () {
+            console.log('취소 버튼 눌럿지 ?')
+        }
+    }
+}
+</script>
