@@ -7,11 +7,11 @@ const AccountRoutes = [
         name: 'AccountLoginPage',
         component: AccountLoginPage
     },
-    // {
-    //     path: '/account/register',
-    //     name: 'AccountRegisterPage',
-    //     component: AccountRegisterPage
-    // },
+    {
+        path: '/account/register',
+        name: 'AccountRegisterPage',
+        component: AccountRegisterPage
+    },
 ]
 
 export default AccountRoutes
