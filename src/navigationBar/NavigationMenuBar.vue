@@ -11,7 +11,7 @@
       <span>PRODUCTS</span>
     </v-btn>
     <v-btn text class="btn-text">
-      <span>BOARDS</span>
+      <span>COMMUNITY</span>
     </v-btn>
     <v-btn text @click="goToReviewList" class="btn-text">
       <span>REVIEW</span>
@@ -45,8 +45,8 @@ export default {
     goToProductList() {
       router.push("/product/list");
     },
-    goToBoardList() {
-      router.push("/board/list");
+    goToCommunityList() {
+      router.push("/community/list");
     },
     goToReviewList() {
       router.push("/review/list");

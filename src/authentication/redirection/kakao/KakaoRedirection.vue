@@ -13,7 +13,6 @@ export default {
             ['requestAccessTokenToDjangoRedirection']),
         async setRedirectData () {
             const code = this.$route.query.code
-
             await this.requestAccessTokenToDjangoRedirection({ code })
             console.log('code:', code)
         }
