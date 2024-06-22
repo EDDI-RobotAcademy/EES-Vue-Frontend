@@ -35,6 +35,7 @@ const actions: AccountActions = {
     async requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>,
         accountInfo: { email: string, nickname: string }): Promise<void> {
         try {
+            alert('신규 계정이 생성되었습니다!')
             await axiosInst.djangoAxiosInst.post('/account/register', accountInfo)
         } catch (error) {
             console.error('신규 계정 생성 실패:', error)
