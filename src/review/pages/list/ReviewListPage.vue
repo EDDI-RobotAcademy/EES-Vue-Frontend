@@ -3,6 +3,9 @@
     <v-row class="my-5" justify="center">
       <v-col cols="12" class="text-center">
         <h2>PHOTO REVIEW</h2>
+            <router-link :to="{ name: 'ReviewRegisterPage' }">
+                게시물 작성
+            </router-link>
       </v-col>
       <v-col cols="12" class="text-center mb-4">
         <v-btn-toggle class="mx-auto" rounded>
@@ -154,8 +157,8 @@ h2 {
   background-color: white;
   border: 1px solid #ccc;
   margin: 0 5px;
-  border-radius: 25px; /* 둥근 버튼 */
-  min-width: 120px; /* 버튼 너비 조정 */
+  border-radius: 25px;
+  min-width: 120px;
 }
 
 .v-btn-toggle .v-btn--active,
