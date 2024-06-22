@@ -28,7 +28,7 @@
                                             @click="checkNicknameDuplication"
                                             class="check-button"
                                             small>
-                                        중복 검사
+                                         중복 검사 
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -42,7 +42,9 @@
 
 <script>
 import { mapActions } from 'vuex'
+
 const authenticationModule = 'authenticationModule'
+const accountModule = 'accountModule'
 
 export default {
     data () {
@@ -60,10 +62,39 @@ export default {
         }
     },
     async created () {
-        await this.requestUserInfoToDjango()
+        await this.requestUserInfo()
     },
     methods: {
         ...mapActions(authenticationModule, ['requestUserInfoToDjango']),
+        ...mapActions(accountModule, ['requestNicknameDuplicationCheckToDjango']),
+
+        async requestUserInfo () {
+            try {
+                const userInfo = await this.requestUserInfoToDjango()
+                this.email = userInfo.kakao_account.email
+            } catch (error) {
+                console.error('에러:', error)
+                alert('사용자 정보를 가져오는데 실패하였습니다!')
+            }
+        },
+        async checkNicknameDuplication () {
+            console.log('닉네임 중복 검사 누름')
+            try {
+                const isDuplicate = await this.requestNicknameDuplicationCheckToDjango({
+                    newNickname: this.nickname.trim()
+                })
+                if (isDuplicate) {
+                    this.nicknameErrorMessages = ['이 nickname은 이미 사용중입니다!']
+                    this.isNicknameValid = false
+                } else {
+                    this.nicknameErrorMessages = []
+                    this.isNicknameValid = true
+                }
+            } catch (error) {
+                alert('닉네임 중복 확인에 실패했습니다!')
+                this.isNicknameValid = false
+            }
+        }
     }
 }
 </script>
