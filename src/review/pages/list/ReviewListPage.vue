@@ -3,9 +3,13 @@
     <v-row class="my-5" justify="center">
       <v-col cols="12" class="text-center">
         <h2>PHOTO REVIEW</h2>
-            <router-link :to="{ name: 'ReviewRegisterPage' }">
-                게시물 작성
-            </router-link>
+        <router-link
+          class="floating-button"
+          :to="{ name: 'ReviewRegisterPage' }"
+        >
+          <v-icon left>mdi-pencil</v-icon>
+          리뷰 작성
+        </router-link>
       </v-col>
       <v-col cols="12" class="text-center mb-4">
         <v-btn-toggle class="mx-auto" rounded>
@@ -84,6 +88,8 @@
         </v-card>
       </v-col>
     </v-row>
+    <!--스크롤 테스트 추후 삭제-->
+    <div class="extra-space"></div>
   </v-container>
 </template>
 
@@ -138,7 +144,7 @@ export default {
       selectedSort: "최신순",
       categoryOptions: ["전체", "카테고리1", "카테고리2", "카테고리3"],
       selectedCategory: "전체",
-      selectedToggle: "베스트 리뷰", // 선택된 토글 버튼 상태
+      selectedToggle: "베스트 리뷰",
       search: "",
     };
   },
@@ -189,5 +195,25 @@ h2 {
 
 .v-btn {
   color: #3f51b5;
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.floating-button:hover {
+  background-color: #333;
+}
+/* 추후 삭제 */
+.extra-space {
+  height: 500px; /* 원하는 만큼 높이를 조정 */
 }
 </style>
