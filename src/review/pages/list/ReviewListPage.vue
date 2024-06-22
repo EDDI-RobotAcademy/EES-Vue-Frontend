@@ -8,7 +8,6 @@
           :to="{ name: 'ReviewRegisterPage' }"
         >
           <v-icon left>mdi-pencil</v-icon>
-          리뷰 작성
         </router-link>
       </v-col>
       <v-col cols="12" class="text-center mb-4">
@@ -204,10 +203,16 @@ h2 {
   background-color: #000;
   color: #fff;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 50%;
   text-align: center;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
 }
+
 
 .floating-button:hover {
   background-color: #333;
@@ -217,3 +222,4 @@ h2 {
   height: 500px; /* 원하는 만큼 높이를 조정 */
 }
 </style>
+
