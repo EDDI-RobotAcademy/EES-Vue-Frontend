@@ -9,6 +9,14 @@
                             <v-text-field v-model="title" label="제목" outlined dense class="input-custom mt-3"/>
                             <v-text-field v-model="writer" label="작성자" outlined dense class="input-custom mt-3"/>
                             <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3"/>
+                            <v-rating 
+                              v-model="rating" 
+                              background-color="yellow" 
+                              color="yellow darken-3" 
+                              dense
+                              half-increments 
+                              hover
+                            ></v-rating>
                         </v-form>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-space-between">
@@ -35,19 +43,20 @@ export default {
     return {
       title: '',
       writer: '',
-      content: ''
+      content: '',
+      rating: 0 // 추가된 부분
     }
   },
   methods: {
-    ...mapActions(reviewModule, ['requestCreateReviewToDjango', 'fetchReviews']),
+    ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
     async onSubmit () {
       const payload = {
         title: this.title,
         writer: this.writer,
-        content: this.content
+        content: this.content,
+        rating: this.rating // 추가된 부분
       }
       await this.requestCreateReviewToDjango(payload)
-      await this.fetchReviews() // 리뷰를 작성한 후 상태를 다시 불러옵니다.
       this.$router.push({ name: 'ReviewListPage' }) // 리뷰 리스트 페이지로 이동
     },
     onCancel () {
