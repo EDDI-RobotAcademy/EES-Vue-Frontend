@@ -14,19 +14,19 @@ export type ReviewActions = {
 const actions: ReviewActions = {
     async requestReviewListToDjango(context: ActionContext<ReviewState, any>): Promise<void> {
         try {
-            const res: AxiosResponse<any, any> =
-                await axiosInst.djangoAxiosInst.get('/review/list')
-
-            const data: Review[] = res.data
-            context.commit(REQUEST_REVIEW_LIST_TO_DJANGO, data)
+            const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.get('/review/list/');
+            const data: Review[] = res.data;
+            context.commit('REQUEST_REVIEW_LIST_TO_DJANGO', data);
         } catch (error) {
-            console.error('requestReviewListToDjango(): ' + error)
+            console.error('Error fetching review list:', error);
+            // 에러를 처리할 수 있는 추가 로직
             throw error
         }
     },
     async requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, payload: {
         title: string, writer: string, content: string
-    }): Promise<AxiosResponse> {        
+    }): Promise<AxiosResponse> {
+
         console.log('requestCreateReviewToDjango()')
 
         const { title, writer, content } = payload
@@ -34,7 +34,7 @@ const actions: ReviewActions = {
 
         try {
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post(
-                '/review/register', { title, writer, content })
+                '/review/register', { title, writer, content})
 
             console.log('res:', res.data)
             return res.data
@@ -43,6 +43,6 @@ const actions: ReviewActions = {
             throw error
         }
     }
-}
+};
 
-export default actions
+export default actions;

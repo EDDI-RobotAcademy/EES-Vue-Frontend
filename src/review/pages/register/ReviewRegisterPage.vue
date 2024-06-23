@@ -1,24 +1,25 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col cols="12">
-                <v-text-field v-model="title" label="제목"/>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
-                <v-text-field v-model="writer" label="작성자"/>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
-                <v-text-field v-model="content" label="내용" auto-grow/>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12" class="text-right">
-                <v-btn class="ml-2" color="primary" @click="onSubmit">작성 완료</v-btn>
-                <v-btn class="ml-1" color="error" @click="onCancel">취소</v-btn>
+        <v-row justify="center">
+            <v-col cols="12" md="8">
+                <v-card class="elevation-2 card-custom">
+                    <v-card-title class="headline"></v-card-title>
+                    <v-card-text>
+                        <v-form ref="form">
+                            <v-text-field v-model="title" label="제목" outlined dense class="input-custom mt-3"/>
+                            <v-text-field v-model="writer" label="작성자" outlined dense class="input-custom mt-3"/>
+                            <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3"/>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="d-flex justify-space-between">
+                        <v-btn @click="onCancel" class="btn-custom">
+                            <v-icon class="icon-red">mdi-undo</v-icon>
+                        </v-btn>
+                        <v-btn @click="onSubmit" class="btn-custom">
+                            <v-icon class="icon-green">mdi-check</v-icon>
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-col>
         </v-row>
     </v-container>
@@ -26,30 +27,77 @@
 
 <script>
 import { mapActions } from 'vuex'
+
 const reviewModule = 'reviewModule'
+
 export default {
-    data () {
-        return {
-            title: '',
-            writer: '',
-            content: '',
-        }
-    },
-    methods: {
-        ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
-        async onSubmit () {
-            console.log('작성 완료 버튼 눌럿지 ?')
-            const payload = {
-                title: this.title,
-                writer: this.writer,
-                content: this.content,
-            }
-            console.log('payload check:', payload)
-            const board = await this.requestCreateReviewToDjango(payload)
-        },
-        async onCancel () {
-            console.log('취소 버튼 눌럿지 ?')
-        }
+  data () {
+    return {
+      title: '',
+      writer: '',
+      content: ''
     }
+  },
+  methods: {
+    ...mapActions(reviewModule, ['requestCreateReviewToDjango', 'fetchReviews']),
+    async onSubmit () {
+      const payload = {
+        title: this.title,
+        writer: this.writer,
+        content: this.content
+      }
+      await this.requestCreateReviewToDjango(payload)
+      await this.fetchReviews() // 리뷰를 작성한 후 상태를 다시 불러옵니다.
+      this.$router.push({ name: 'ReviewListPage' }) // 리뷰 리스트 페이지로 이동
+    },
+    onCancel () {
+      this.$router.push({ name: 'ReviewListPage' })
+    }
+  }
 }
 </script>
+
+<style scoped>
+.card-custom {
+    background-color: #2c2c2c;
+    color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.input-custom {
+    background-color: #3c3c3c;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.input-custom .v-label {
+    color: #bdbdbd;
+}
+
+.btn-custom {
+    color: #fff;
+    margin: 0 8px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #fff;
+}
+
+.btn-custom:hover .v-icon {
+    color: #000;
+}
+
+.icon-green {
+    color: #4caf50; /* 초록색 */
+}
+
+.icon-red {
+    color: #f05650;
+}
+
+.v-icon {
+    font-size: 24px; /* 아이콘 두께 증가 */
+}
+</style>
