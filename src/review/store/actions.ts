@@ -24,17 +24,17 @@ const actions: ReviewActions = {
         }
     },
     async requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, payload: {
-        title: string, writer: string, content: string
+        title: string, writer: string, content: string, rating: number
     }): Promise<AxiosResponse> {
 
         console.log('requestCreateReviewToDjango()')
 
-        const { title, writer, content } = payload
-        console.log('전송할 데이터:', { title, writer, content })
+        const { title, writer, content, rating } = payload
+        console.log('전송할 데이터:', { title, writer, content, rating })
 
         try {
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post(
-                '/review/register', { title, writer, content})
+                '/review/register', { title, writer, content, rating})
 
             console.log('res:', res.data)
             return res.data
