@@ -65,16 +65,13 @@
               >
                 <v-card class="mx-auto text-center" max-width="400" @click="readRow(review)">
                   <v-img :src="review.imageUrl" height="200px"></v-img>
-                  <v-card-title class="review-title">{{ review.title }}</v-card-title>
-                  <v-card-subtitle class="review-writer">{{ review.writer }}</v-card-subtitle>
-                  <v-card-subtitle>{{ formatDate(review.regDate) }}</v-card-subtitle>
-                  <v-divider></v-divider>
+                  <v-card-title>{{ review.title }}</v-card-title>
+                    <v-card-subtitle class="review-info-unique">
+                      <span class="review-writer-unique">{{ review.writer }}</span>
+                      <span class="review-date-unique">{{ formatDate(review.regDate) }}</span>
+                    </v-card-subtitle>
                   <v-card-actions>
-                    <v-row align="center" class="grey--text">
-                      <v-col cols="12">
-                        <v-rating :value="review.rating" dense readonly></v-rating>
-                      </v-col>
-                    </v-row>
+                    <v-rating v-model="review.rating" color="yellow" dense readonly half-increments></v-rating>
                   </v-card-actions>
                 </v-card>
               </v-col>
@@ -155,6 +152,7 @@ export default {
   methods: {
     ...mapActions(reviewModule, ['requestReviewListToDjango']),
     readRow(review) {
+      console.log("Review rating: ", review.rating);
       this.$router.push({
         name: 'VuetifyReviewReadPage',
         params: { reviewId: review.reviewId.toString() }
@@ -175,7 +173,7 @@ export default {
       });
 
       this.$nextTick(() => {
-        this.observer.observe(this.$refs.loadMoreTrigger);
+         this.observer.observe(this.$refs.loadMoreTrigger);
       });
     },
     loadMoreReviews() {
@@ -218,6 +216,15 @@ h2 {
   font-weight: bold;
 }
 
+.review-info-unique {
+  text-align: center;
+}
+
+.review-writer-unique,
+.review-date-unique {
+  display: block;
+}
+
 .v-btn-toggle .v-btn {
   font-family: 'Arial', sans-serif;
   color: #555;
@@ -251,7 +258,7 @@ h2 {
   text-align: center;
 }
 
-.review-writer {
+.review-writer-unique {
   font-weight: bold;
   color: #333;
 }
