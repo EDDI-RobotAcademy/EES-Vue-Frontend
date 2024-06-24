@@ -1,13 +1,16 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+import HomeRoutes from '@/home/router/HomeRoutes'
 import ReviewRoutes from '@/review/router/ReviewRoutes'
 import AccountRoutes from '@/account/router/AccountRoutes'
 import AuthenticationRoutes from '@/authentication/router/AuthenticationRoutes'
-import ProductRoutes from '@/product/router/ProductRoutes'
+import ProductRoutes from '@/product/router/ProductRoutes';
+
 
 const routes: Array<RouteRecordRaw> = [
-  ...AccountRoutes,
+  ...HomeRoutes,
   ...ReviewRoutes,
+  ...AccountRoutes,
   ...AuthenticationRoutes,
   ...ProductRoutes,
 ]

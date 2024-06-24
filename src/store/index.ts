@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+
 import reviewModule from "@/review/store/reviewModule"
 import authenticationModule from '@/authentication/store/authenticationModule'
 import productModule from "@/product/store/productModule"
