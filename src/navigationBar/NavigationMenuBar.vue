@@ -20,10 +20,12 @@
       <span>CONTACT</span>
     </v-btn>
     <v-btn v-if="!isLogin" text @click="signIn" class="btn-text">
-      <span>LOGIN</span>
+            <v-icon left>mdi-login</v-icon>
+            <span>LOGIN</span>
     </v-btn>
     <v-btn v-if="isLogin" text @click="signOut" class="btn-text">
-      <span>LOGOUT</span>
+            <v-icon left>mdi-logout</v-icon>
+            <span>LOGOUT</span>
     </v-btn>
   </v-app-bar>
 </template>
@@ -35,6 +37,7 @@ import router from "@/router";
 export default {
   data() {
     return {
+      accessToken: null,
       isLogin: false,
     };
   },
@@ -58,10 +61,22 @@ export default {
       router.push("/account/login");
     },
     signOut() {
-      this.isLogin = false;
-      router.push("/");
+      localStorage.removeItem("accessToken")
+      this.isLogin = false
+      router.push('/')
     },
+    updateLoginStatus() {
+      this.userToken = localStorage.getItem("userToken")
+      this.isLogin = !!this.userToken
+    }
   },
+  mounted () {
+    this.updateLoginStatus()
+    window.addEventListener('storage', this.updateLoginStatus)
+  },
+  beforeUnmount () {
+    window.removeEventListener('storage', this.updateLoginStatus)
+  }
 };
 </script>
 
