@@ -8,6 +8,7 @@
     <v-spacer></v-spacer>
 
     <v-btn text @click="goToProductList" class="btn-text">
+      <span class="mdi mdi-shoe-sneaker"></span>
       <span>PRODUCTS</span>
     </v-btn>
     <v-btn text class="btn-text">
