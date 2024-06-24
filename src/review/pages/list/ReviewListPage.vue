@@ -56,55 +56,68 @@
           <v-card-text>
             <v-row>
               <v-col
-                v-for="review in filteredReviews"
+                v-for="review in displayedReviews"
                 :key="review.reviewId"
                 cols="12"
-                md="6"
-                lg="4"
+                sm="6"
+                md="3"
+                class="px-1"
               >
-                <v-card class="mx-auto" max-width="400">
+                <v-card class="mx-auto text-center" max-width="400" @click="readRow(review)">
                   <v-img :src="review.imageUrl" height="200px"></v-img>
                   <v-card-title>{{ review.title }}</v-card-title>
-                  <v-card-subtitle class="text-truncate"
-                    >{{ review.writer }} - {{ review.regDate }}</v-card-subtitle
-                  >
-                  <v-card-text>{{ review.content }}</v-card-text>
-                  <v-divider></v-divider>
+                    <v-card-subtitle class="review-info-unique">
+                      <span class="review-writer-unique">{{ review.writer }}</span>
+                      <span class="review-date-unique">{{ formatDate(review.regDate) }}</span>
+                    </v-card-subtitle>
                   <v-card-actions>
-                    <v-row align="center" class="grey--text">
-                      <v-col cols="6">
-                        <v-rating :value="review.rating" dense readonly></v-rating>
-                      </v-col>
-                      <v-col cols="6" class="text-right">
-                        <v-btn text small @click="readRow(review)">보기</v-btn>
-                      </v-col>
-                    </v-row>
+                    <v-rating v-model="review.rating" color="yellow" dense readonly half-increments></v-rating>
                   </v-card-actions>
                 </v-card>
               </v-col>
             </v-row>
+            <div ref="loadMoreTrigger" style="height: 20px;"></div>
           </v-card-text>
         </v-card>
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" class="text-center">
+            <v-progress-circular
+              v-if="loading"
+              indeterminate
+              color="primary"
+            ></v-progress-circular>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
-    <!--스크롤 테스트 추후 삭제-->
-    <div class="extra-space"></div>
   </v-container>
 </template>
 
 <script>
-// eslint-disable-next-line
-import { mapActions, mapState } from "vuex";
-
-const reviewModule = "reviewModule";
+import { mapActions, mapState } from 'vuex';
+const reviewModule = 'reviewModule';
 
 export default {
+  data() {
+    return {
+      sortOptions: ['최신순', '평점 높은 순', '리뷰 많은 순'],
+      selectedSort: '최신순',
+      categoryOptions: ['전체', '카테고리1', '카테고리2', '카테고리3'],
+      selectedCategory: '전체',
+      selectedToggle: '베스트 리뷰',
+      search: '',
+      perPage: 8,
+      displayedReviews: [],
+      observer: null,
+      loading: false,
+    };
+  },
   computed: {
-    ...mapState(reviewModule, ["reviews"]),
+    ...mapState(reviewModule, ['reviews']),
     filteredReviews() {
       let filtered = this.reviews;
 
-      if (this.selectedCategory !== "전체") {
+      if (this.selectedCategory !== '전체') {
         filtered = filtered.filter((review) => review.category === this.selectedCategory);
       }
 
@@ -112,16 +125,15 @@ export default {
         filtered = filtered.filter(
           (review) =>
             review.title.includes(this.search) ||
-            review.writer.includes(this.search) ||
-            review.content.includes(this.search)
+            review.writer.includes(this.search)
         );
       }
 
-      if (this.selectedSort === "최신순") {
+      if (this.selectedSort === '최신순') {
         filtered.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
-      } else if (this.selectedSort === "평점 높은 순") {
+      } else if (this.selectedSort === '평점 높은 순') {
         filtered.sort((a, b) => b.rating - a.rating);
-      } else if (this.selectedSort === "리뷰 많은 순") {
+      } else if (this.selectedSort === '리뷰 많은 순') {
         filtered.sort((a, b) => b.reviewCount - a.reviewCount);
       }
 
@@ -130,34 +142,91 @@ export default {
   },
   mounted() {
     this.requestReviewListToDjango();
+    this.initializeObserver();
+  },
+  beforeUnmount() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   },
   methods: {
-    ...mapActions(reviewModule, ["requestReviewListToDjango"]),
+    ...mapActions(reviewModule, ['requestReviewListToDjango']),
     readRow(review) {
-      console.log("지금 할 수 있는게 없다!");
+      console.log("Review rating: ", review.rating);
+      this.$router.push({
+        name: 'VuetifyReviewReadPage',
+        params: { reviewId: review.reviewId.toString() }
+      });
+    },
+    updateItems() {
+      // 페이지네이션 변경 시 처리할 로직을 여기에 작성
+    },
+    initializeObserver() {
+      this.observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          this.loadMoreReviews();
+        }
+      }, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1.0
+      });
+
+      this.$nextTick(() => {
+         this.observer.observe(this.$refs.loadMoreTrigger);
+      });
+    },
+    loadMoreReviews() {
+      if (this.loading) return;
+
+      this.loading = true;
+      console.log('Loading more reviews...');
+      setTimeout(() => {
+        const currentLength = this.displayedReviews.length;
+        if (currentLength < this.filteredReviews.length) {
+          const nextReviews = this.filteredReviews.slice(currentLength, currentLength + this.perPage);
+          this.displayedReviews = this.displayedReviews.concat(nextReviews);
+        }
+        this.loading = false;
+      }, 1000);
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}. ${month}. ${day}`;
     },
   },
-  data() {
-    return {
-      sortOptions: ["최신순", "평점 높은 순", "리뷰 많은 순"],
-      selectedSort: "최신순",
-      categoryOptions: ["전체", "카테고리1", "카테고리2", "카테고리3"],
-      selectedCategory: "전체",
-      selectedToggle: "베스트 리뷰",
-      search: "",
-    };
+  watch: {
+    reviews(newReviews) {
+      this.displayedReviews = newReviews.slice(0, this.perPage);
+    },
+    filteredReviews() {
+      this.displayedReviews = this.filteredReviews.slice(0, this.perPage);
+      this.observer.observe(this.$refs.loadMoreTrigger);
+    }
   },
 };
 </script>
 
 <style scoped>
 h2 {
-  font-family: "Arial", sans-serif;
+  font-family: 'Arial', sans-serif;
   font-weight: bold;
 }
 
+.review-info-unique {
+  text-align: center;
+}
+
+.review-writer-unique,
+.review-date-unique {
+  display: block;
+}
+
 .v-btn-toggle .v-btn {
-  font-family: "Arial", sans-serif;
+  font-family: 'Arial', sans-serif;
   color: #555;
   background-color: white;
   border: 1px solid #ccc;
@@ -177,10 +246,21 @@ h2 {
   max-width: 250px;
 }
 
-.v-card-title,
-.v-card-subtitle,
-.v-card-text {
-  font-family: "Arial", sans-serif;
+.v-card-title {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  text-align: center;
+}
+
+.v-card-subtitle {
+  font-family: 'Arial', sans-serif;
+  font-weight: normal;
+  text-align: center;
+}
+
+.review-writer-unique {
+  font-weight: bold;
+  color: #333;
 }
 
 .v-card {
@@ -213,13 +293,7 @@ h2 {
   height: 60px;
 }
 
-
 .floating-button:hover {
   background-color: #333;
 }
-/* 추후 삭제 */
-.extra-space {
-  height: 500px; /* 원하는 만큼 높이를 조정 */
-}
 </style>
-
