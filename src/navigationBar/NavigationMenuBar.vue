@@ -2,13 +2,13 @@
   <v-app-bar color="black" app dark height="64">
     <v-toolbar-title class="navbar-title">
       <v-btn text @click="goToHome" class="navbar-title-btn">
-        <span>IT, SHOE</span>
+        <v-icon class="mdi-icon" left>mdi-shoe-sneaker</v-icon>
+        <span> IT, SHOE</span>
       </v-btn>
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
     <v-btn text @click="goToProductList" class="btn-text">
-      <span class="mdi mdi-shoe-sneaker"></span>
       <span>PRODUCTS</span>
     </v-btn>
     <v-btn text class="btn-text">
@@ -21,12 +21,12 @@
       <span>CONTACT</span>
     </v-btn>
     <v-btn v-if="!isAuthenticated" text @click="signIn" class="btn-text">
-            <v-icon left>mdi-login</v-icon>
-            <span>LOGIN</span>
+      <v-icon left>mdi-login</v-icon>
+      <span>LOGIN</span>
     </v-btn>
     <v-btn v-if="isAuthenticated" text @click="signOut" class="btn-text">
-            <v-icon left>mdi-logout</v-icon>
-            <span>LOGOUT</span>
+      <v-icon left>mdi-logout</v-icon>
+      <span>LOGOUT</span>
     </v-btn>
   </v-app-bar>
 </template>
@@ -84,6 +84,11 @@ export default {
   color: white;
 }
 
+.mdi-icon {
+  font-size: 32px; /* 아이콘 크기 설정 */
+  margin-right: 8px;
+}
+
 .btn-text {
   font-size: 18px;
   margin-right: 16px;
@@ -95,12 +100,7 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.2
-  ); /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
+  background-color: rgba(255, 255, 255, 0.2); /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
 }
 
 .v-btn:hover .btn-text {
