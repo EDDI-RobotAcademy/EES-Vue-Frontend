@@ -12,7 +12,6 @@
                             <v-rating 
                               v-model="rating" 
                               background-color="yellow" 
-                              color="yellow darken-3" 
                               dense
                               half-increments 
                               hover
@@ -108,5 +107,9 @@ export default {
 
 .v-icon {
     font-size: 24px; /* 아이콘 두께 증가 */
+}
+
+.v-rating {
+  color: #FFBF00;
 }
 </style>
