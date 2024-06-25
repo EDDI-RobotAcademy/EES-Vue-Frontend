@@ -154,7 +154,7 @@ export default {
     readRow(review) {
       console.log("Review rating: ", review.rating);
       this.$router.push({
-        name: 'VuetifyReviewReadPage',
+        name: 'ReviewReadPage',
         params: { reviewId: review.reviewId.toString() }
       });
     },
