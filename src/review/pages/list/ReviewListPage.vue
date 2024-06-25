@@ -71,7 +71,7 @@
                       <span class="review-date-unique">{{ formatDate(review.regDate) }}</span>
                     </v-card-subtitle>
                   <v-card-actions>
-                    <v-rating v-model="review.rating" color="yellow" dense readonly half-increments></v-rating>
+                    <v-rating v-model="review.rating" dense readonly half-increments></v-rating>
                   </v-card-actions>
                 </v-card>
               </v-col>
@@ -269,7 +269,7 @@ h2 {
 }
 
 .v-rating {
-  color: #ffd700;
+  color: #FFBF00;
 }
 
 .v-btn {
