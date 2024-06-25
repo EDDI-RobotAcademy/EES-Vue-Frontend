@@ -2,9 +2,9 @@
     <v-container>
         <h2>Running Shoes Product List</h2>
         <div style="text-align: left; margin: 15px;">
-            <!-- <router-link :to="{ name: 'ProductRegisterPage' }">
+            <router-link :to="{ name: 'ProductRegisterPage' }">
                 상품 등록
-            </router-link> -->
+            </router-link>
         </div>
         <v-row v-if="productList.length > 0">
             <v-col v-for="(product, index) in productList" :key=index cols="12" sm="6" md="4" lg="3">
