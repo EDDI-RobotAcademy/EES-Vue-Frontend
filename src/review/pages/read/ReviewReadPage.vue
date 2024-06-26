@@ -18,6 +18,9 @@
       </v-card>
       <v-icon class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
     </div>
+    <router-link class="floating-button" :to="{ name: 'ReviewListPage' }">
+      <v-icon color="white">mdi-undo</v-icon>
+    </router-link>
   </v-container>
 </template>
 
@@ -39,14 +42,17 @@ export default {
   methods: {
     ...mapActions(reviewModule, ['requestReviewToDjango']),
     navigateToPrevious() {
-      const previousId = Number(this.reviewId) + 1;
+      const previousId = Number(this.reviewId) - 1;
       if (previousId > 0) {
         this.$router.push(`/review/read/${previousId}`);
       }
     },
     navigateToNext() {
-      const nextId = Number(this.reviewId) - 1;
+      const nextId = Number(this.reviewId) + 1;
       this.$router.push(`/review/read/${nextId}`);
+    },
+    navigateToList() {
+      this.$router.push('/review/list');
     }
   },
   watch: {
@@ -67,7 +73,7 @@ export default {
   align-items: center;
   width: 100%;
   max-width: 1200px;
-  margin: 40px auto;
+  margin: 0 auto;
 }
 
 .question-card {
@@ -126,12 +132,37 @@ export default {
 }
 
 .left-arrow, .right-arrow {
-  font-size: 6rem;
+  font-size: 3rem;
   cursor: pointer;
   color: #000000;
 }
 
 .left-arrow:hover, .right-arrow:hover {
   color: #555555;
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #000000; /* 검은색 배경 */
+  color: #ffffff; /* 흰색 아이콘 */
+  padding: 10px 20px;
+  border-radius: 50%;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+}
+
+.floating-button:hover {
+  background-color: #333333; /* hover 시 약간 어두운 검은색 */
+}
+
+.mdi-icon-white {
+  color: #ffffff;
 }
 </style>
