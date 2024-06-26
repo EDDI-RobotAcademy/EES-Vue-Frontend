@@ -39,13 +39,13 @@ export default {
   methods: {
     ...mapActions(reviewModule, ['requestReviewToDjango']),
     navigateToPrevious() {
-      const previousId = Number(this.reviewId) - 1;
+      const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
         this.$router.push(`/review/read/${previousId}`);
       }
     },
     navigateToNext() {
-      const nextId = Number(this.reviewId) + 1;
+      const nextId = Number(this.reviewId) - 1;
       this.$router.push(`/review/read/${nextId}`);
     }
   },
