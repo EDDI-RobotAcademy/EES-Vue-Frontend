@@ -4,7 +4,7 @@
             <v-form ref="form">
                 <v-text-field
                     v-model="username"
-                    label="아이디"
+                    label="ID"
                     prepend-icon="mdi-account"
                     type="text"
                     required
@@ -13,7 +13,7 @@
                 <v-text-field
                     v-model="password"
                     type="password"
-                    label="비밀번호"
+                    label="PASSWORD"
                     prepend-icon="mdi-lock"
                     required
                     dense
@@ -27,12 +27,19 @@
                 <div class="find-id-pw-options mt-2">
                     <div>
                         <v-icon small class="ml-2">mdi-account-search</v-icon>
-                        <span class="option-text">아이디 찾기</span>
+                        <span class="option-text"> ID 찾기 </span>
                     </div>
                     <span class="find-id-pw-separator">|</span>
                     <div>
-                        <v-icon small>mdi-lock-reset</v-icon>
-                        <span class="option-text">비밀번호 찾기</span>
+                        <v-icon small class="ml-2">mdi-lock-reset</v-icon>
+                        <span class="option-text"> PW 찾기 </span>
+                    </div>
+                    <span class="find-id-pw-separator">|</span>
+                    <div>
+                        <router-link :to="{ name: 'AccountRegisterPage' }" class="custom-link">
+                            <v-icon small class="ml-2">mdi-account-plus</v-icon>
+                                <span class="option-text"> 회원 가입 </span>
+                        </router-link>
                     </div>
                 </div>
                 <v-btn color="yellow darken-2" class="black--text mt-2" block @click="goToKakaoLogin">
@@ -80,5 +87,15 @@ export default {
 .find-id-pw-separator {
     margin: 0 8px;
     color: #000000;
+}
+
+.custom-link {
+  color: black;
+  text-decoration: none; /* 링크 밑줄 없애기 */
+}
+
+.custom-link:hover {
+  color: black; /* 링크를 마우스로 가리킬 때도 검정색 유지 */
+  text-decoration: none; /* 링크를 마우스로 가리킬 때도 밑줄 없애기 */
 }
 </style>
