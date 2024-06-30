@@ -9,9 +9,13 @@
         <v-card-subtitle class="subtitle-section">
           {{ review.writer }}
         </v-card-subtitle>
-        <div class="image-placeholder">
-          이미지 구현 예정
-        </div>
+        <v-img :src="getReviewImageUrl(review.reviewImage)" aspect-ratio="1" class="image-placeholder">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="grey lighten-5"/>
+            </v-row>
+          </template>
+        </v-img>
         <v-card-text class="content-section">
           {{ review.content }}
         </v-card-text>
@@ -29,6 +33,7 @@ import { mapActions, mapState } from 'vuex'
 import '@mdi/font/css/materialdesignicons.css'
 
 const reviewModule = 'reviewModule'
+
 export default {
   props: {
     reviewId: {
@@ -51,6 +56,10 @@ export default {
       const nextId = Number(this.reviewId) + 1;
       this.$router.push(`/review/read/${nextId}`);
     },
+    getReviewImageUrl(imageName) {
+      console.log('imageName:', imageName);
+      return require(`@/assets/images/reviewImages/${imageName}`);
+    },
   },
   watch: {
     reviewId(newId) {
@@ -58,7 +67,7 @@ export default {
     }
   },
   created() {
-    this.requestReviewToDjango(this.reviewId)
+    this.requestReviewToDjango(this.reviewId);
   },
 }
 </script>
@@ -70,7 +79,7 @@ export default {
   align-items: center;
   width: 100%;
   max-width: 800px;
-  margin: 40px auto; /* 상단 네비게이션바와 거리 조정 */
+  margin: 40px auto;
 }
 
 .question-card {
@@ -78,7 +87,7 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 네비게이션바와 카드 사이 거리 조정 */
+  margin-top: 20px;
 }
 
 .image-placeholder {
@@ -87,7 +96,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #757575;
   font-size: 1.2rem;
 }
 
