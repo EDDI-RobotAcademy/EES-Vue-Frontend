@@ -15,6 +15,7 @@ export type BoardActions = {
     requestModifyBoardToDjango(context: ActionContext<BoardState, any>, payload: {
         title: string, content: string, board_id: number
     }): Promise<void>
+    requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, boardId: number): Promise<void>
 }
 
 const actions: BoardActions = {
@@ -63,7 +64,16 @@ const actions: BoardActions = {
         } catch (error) {
             throw error
         }
-    }
+    },
+
+    async requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, boardId: number): Promise<void> {
+        try {
+            console.log('requestDeleteBoardToDjango()')
+            await axiosInst.djangoAxiosInst.delete(`/board/delete/${boardId}`)
+        } catch (error) {
+            throw error
+        }
+    },
 }
 
 export default actions
