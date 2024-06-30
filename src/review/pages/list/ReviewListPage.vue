@@ -3,30 +3,9 @@
     <v-row class="my-5" justify="center">
       <v-col cols="12" class="text-center">
         <h2>PHOTO REVIEW</h2>
-        <router-link
-          class="floating-button"
-          :to="{ name: 'ReviewRegisterPage' }"
-        >
+        <router-link class="floating-button" :to="{ name: 'ReviewRegisterPage' }">
           <v-icon left>mdi-pencil</v-icon>
         </router-link>
-      </v-col>
-      <v-col cols="12" class="text-center mb-4">
-        <v-btn-toggle class="mx-auto" rounded>
-          <v-btn
-            class="toggle-btn"
-            :class="{ 'active-btn': selectedToggle === '베스트 리뷰' }"
-            @click="selectedToggle = '베스트 리뷰'"
-          >
-            베스트 리뷰
-          </v-btn>
-          <v-btn
-            class="toggle-btn"
-            :class="{ 'active-btn': selectedToggle === '스태프 리뷰' }"
-            @click="selectedToggle = '스태프 리뷰'"
-          >
-            스태프 리뷰
-          </v-btn>
-        </v-btn-toggle>
       </v-col>
       <v-col cols="12" class="d-flex justify-center mb-4">
         <v-select
@@ -36,56 +15,39 @@
           class="mr-4"
           hide-details
         ></v-select>
-        <v-select
-          :items="categoryOptions"
-          v-model="selectedCategory"
-          label="카테고리별 리뷰 보기"
-          class="mr-4"
-          hide-details
-        ></v-select>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
-          label="원하는 단어를 검색하세요"
+          label="검색"
           single-line
           hide-details
         ></v-text-field>
       </v-col>
       <v-col cols="12">
-        <v-card class="pa-5">
-          <v-card-text>
-            <v-row>
-              <v-col
-                v-for="review in displayedReviews"
-                :key="review.reviewId"
-                cols="12"
-                sm="6"
-                md="3"
-                class="px-1"
-              >
-                <v-card class="mx-auto text-center" max-width="400" @click="readRow(review)">
-                  <v-img :src="review.imageUrl" height="200px"></v-img>
-                  <v-card-title>{{ review.title }}</v-card-title>
-                    <v-card-subtitle class="review-info-unique">
-                      <span class="review-writer-unique">{{ review.writer }}</span>
-                      <span class="review-date-unique">{{ formatDate(review.regDate) }}</span>
-                    </v-card-subtitle>
-                  <v-card-actions>
-                    <v-rating v-model="review.rating" dense readonly half-increments></v-rating>
-                  </v-card-actions>
-                </v-card>
-              </v-col>
-            </v-row>
-            <div ref="loadMoreTrigger" style="height: 20px;"></div>
-          </v-card-text>
-        </v-card>
-        <v-row class="d-flex justify-center">
+        <v-row v-if="filteredReviews.length > 0">
+          <v-col v-for="(review, index) in sortedReviews" :key="index" cols="12" sm="6" md="4" lg="3">
+            <v-card class="review-card" @click="goToReviewReadPage(review.reviewId)">
+              <div class="image-container">
+                <v-img :src="getReviewImageUrl(review.reviewImage)" class="review-image">
+                  <template v-slot:placeholder>
+                    <v-row class="fill-height ma-0" align="center" justify="center">
+                      <v-progress-circular indeterminate color="grey lighten-5" />
+                    </v-row>
+                  </template>
+                </v-img>
+              </div>
+              <v-card-title>{{ review.title }}</v-card-title>
+              <v-card-subtitle>{{ review.writer }}</v-card-subtitle>
+              <v-card-subtitle>{{ formatDate(review.regDate) }}</v-card-subtitle>
+              <v-card-actions>
+                <v-rating v-model="review.rating" dense readonly half-increments></v-rating>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row v-else>
           <v-col cols="12" class="text-center">
-            <v-progress-circular
-              v-if="loading"
-              indeterminate
-              color="primary"
-            ></v-progress-circular>
+            <v-alert type="info">등록된 상품이 없습니다!</v-alert>
           </v-col>
         </v-row>
       </v-col>
@@ -100,95 +62,45 @@ const reviewModule = 'reviewModule';
 export default {
   data() {
     return {
-      sortOptions: ['최신순', '평점 높은 순', '리뷰 많은 순'],
-      selectedSort: '최신순',
-      categoryOptions: ['전체', '카테고리1', '카테고리2', '카테고리3'],
-      selectedCategory: '전체',
-      selectedToggle: '베스트 리뷰',
       search: '',
-      perPage: 8,
-      displayedReviews: [],
-      observer: null,
-      loading: false,
+      sortOptions: ['최신순', '오래된순', '평점 높은 순'],
+      selectedSort: '최신순',
     };
   },
   computed: {
-    ...mapState(reviewModule, ['reviews']),
+    ...mapState(reviewModule, ['reviewList']),
     filteredReviews() {
-      let filtered = this.reviews;
-
-      if (this.selectedCategory !== '전체') {
-        filtered = filtered.filter((review) => review.category === this.selectedCategory);
-      }
-
-      if (this.search) {
-        filtered = filtered.filter(
-          (review) =>
-            review.title.includes(this.search) ||
-            review.writer.includes(this.search)
-        );
-      }
-
+      return this.reviewList.filter(
+        (review) =>
+          review.title.includes(this.search) ||
+          review.writer.includes(this.search)
+      );
+    },
+    sortedReviews() {
+      let sorted = this.filteredReviews.slice();
       if (this.selectedSort === '최신순') {
-        filtered.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
+        sorted.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
+      } else if (this.selectedSort === '오래된순') {
+        sorted.sort((a, b) => new Date(a.regDate) - new Date(b.regDate));
       } else if (this.selectedSort === '평점 높은 순') {
-        filtered.sort((a, b) => b.rating - a.rating);
-      } else if (this.selectedSort === '리뷰 많은 순') {
-        filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+        sorted.sort((a, b) => b.rating - a.rating);
       }
-
-      return filtered;
+      return sorted;
     },
   },
   mounted() {
     this.requestReviewListToDjango();
-    this.initializeObserver();
-  },
-  beforeUnmount() {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
   },
   methods: {
     ...mapActions(reviewModule, ['requestReviewListToDjango']),
-    readRow(review) {
-      console.log("Review rating: ", review.rating);
+    getReviewImageUrl(imageName) {
+      return require(`@/assets/images/reviewImages/${imageName}`);
+    },
+    goToReviewReadPage(reviewId) {
       this.$router.push({
         name: 'ReviewReadPage',
-        params: { reviewId: review.reviewId.toString() }
+        params: { reviewId: reviewId },
       });
-    },
-    updateItems() {
-      // 페이지네이션 변경 시 처리할 로직을 여기에 작성
-    },
-    initializeObserver() {
-      this.observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          this.loadMoreReviews();
-        }
-      }, {
-        root: null,
-        rootMargin: '0px',
-        threshold: 1.0
-      });
-
-      this.$nextTick(() => {
-         this.observer.observe(this.$refs.loadMoreTrigger);
-      });
-    },
-    loadMoreReviews() {
-      if (this.loading) return;
-
-      this.loading = true;
-      console.log('Loading more reviews...');
-      setTimeout(() => {
-        const currentLength = this.displayedReviews.length;
-        if (currentLength < this.filteredReviews.length) {
-          const nextReviews = this.filteredReviews.slice(currentLength, currentLength + this.perPage);
-          this.displayedReviews = this.displayedReviews.concat(nextReviews);
-        }
-        this.loading = false;
-      }, 1000);
     },
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -198,15 +110,6 @@ export default {
       return `${year}. ${month}. ${day}`;
     },
   },
-  watch: {
-    reviews(newReviews) {
-      this.displayedReviews = newReviews.slice(0, this.perPage);
-    },
-    filteredReviews() {
-      this.displayedReviews = this.filteredReviews.slice(0, this.perPage);
-      this.observer.observe(this.$refs.loadMoreTrigger);
-    }
-  },
 };
 </script>
 
@@ -214,15 +117,6 @@ export default {
 h2 {
   font-family: 'Arial', sans-serif;
   font-weight: bold;
-}
-
-.review-info-unique {
-  text-align: center;
-}
-
-.review-writer-unique,
-.review-date-unique {
-  display: block;
 }
 
 .v-btn-toggle .v-btn {
@@ -258,22 +152,16 @@ h2 {
   text-align: center;
 }
 
-.review-writer-unique {
-  font-weight: bold;
-  color: #333;
-}
-
-.v-card {
-  border-radius: 10px;
-  background-color: #fafafa;
-}
-
 .v-rating {
   color: #FFBF00;
 }
 
-.v-btn {
-  color: #3f51b5;
+.review-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  margin: 0;
 }
 
 .floating-button {

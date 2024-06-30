@@ -7,9 +7,8 @@ import { REQUEST_REVIEW_LIST_TO_DJANGO } from "./mutation-types"
 export type ReviewActions = {
     requestReviewToDjango(context: ActionContext<ReviewState, any>, reviewId: number): Promise<void>
     requestReviewListToDjango(context: ActionContext<ReviewState, any>): Promise<void>
-    requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, payload: {
-        title: string, writer: string, content: string
-    }): Promise<AxiosResponse>
+    requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, imageFormData: FormData
+    ): Promise<AxiosResponse>
 }
 
 const actions: ReviewActions = {
@@ -33,26 +32,25 @@ const actions: ReviewActions = {
             throw error
         }
     },
-    async requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, payload: {
-        title: string, writer: string, content: string, rating: number
-    }): Promise<AxiosResponse> {
-
-        console.log('requestCreateReviewToDjango()')
-
-        const { title, writer, content, rating } = payload
-        console.log('전송할 데이터:', { title, writer, content, rating })
-
+    async requestCreateReviewToDjango(context: ActionContext<ReviewState, unknown>, 
+                                        imageFormData: FormData): Promise<AxiosResponse> {
         try {
-            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post(
-                '/review/register', { title, writer, content, rating})
+            console.log('requestCreateReviewToDjango(1)')
 
-            console.log('res:', res.data)
-            return res.data
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post(
+                '/review/register', imageFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+
+            console.log('응답 데이터:', res.data)
+            return res
         } catch (error) {
-            alert('requestCreateReviewToDjango() 문제 발생!')
+            console.error('requestCreateReviewToDjango():', error)
             throw error
         }
-    }
+    },
 };
 
 export default actions;

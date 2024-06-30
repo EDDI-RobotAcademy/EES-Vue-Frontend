@@ -1,35 +1,57 @@
 <template>
-    <v-container>
-        <v-row justify="center">
-            <v-col cols="12" md="8">
-                <v-card class="elevation-2 card-custom">
-                    <v-card-title class="headline"></v-card-title>
-                    <v-card-text>
-                        <v-form ref="form">
-                            <v-text-field v-model="title" label="제목" outlined dense class="input-custom mt-3"/>
-                            <v-text-field v-model="writer" label="작성자" outlined dense class="input-custom mt-3"/>
-                            <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3"/>
-                            <v-rating 
-                              v-model="rating" 
-                              background-color="yellow" 
-                              dense
-                              half-increments 
-                              hover
-                            ></v-rating>
-                        </v-form>
-                    </v-card-text>
-                    <v-card-actions class="d-flex justify-space-between">
-                        <v-btn @click="onCancel" class="btn-custom">
-                            <v-icon class="icon-red">mdi-undo</v-icon>
-                        </v-btn>
-                        <v-btn @click="onSubmit" class="btn-custom">
-                            <v-icon class="icon-green">mdi-check</v-icon>
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+  <v-container class="container">
+    <v-row justify="center" align="center" class="full-height">
+      <v-col cols="12" md="8">
+        <h2 v-if="step === 1" class="rating-text">{{ displayedText }}<span v-if="showCursor" class="cursor">|</span></h2>
+        <div v-if="step === 1" class="rating-section">
+          <div class="stars-wrapper">
+            <v-icon
+              v-for="n in 5"
+              :key="n"
+              :style="{ visibility: n <= showStars ? 'visible' : 'hidden', color: n <= hoverRating ? '#FFD700' : '#C0C0C0' }"
+              class="star"
+              @click="rating = n"
+              @mouseover="hoverRating = n"
+              @mouseleave="hoverRating = rating"
+            >
+              mdi-star
+            </v-icon>
+          </div>
+        </div>
+        <div v-if="step === 2">
+          <v-row justify="center">
+            <v-col cols="12" class="d-flex justify-center">
+              <v-text-field v-model="title" label="제목" outlined dense class="input-custom mt-3" />
             </v-col>
-        </v-row>
-    </v-container>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" class="d-flex justify-center">
+              <v-text-field v-model="writer" label="작성자" outlined dense class="input-custom mt-3" />
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" class="d-flex justify-center">
+              <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-file-input v-model="reviewImage" label="이미지 파일" prepend-icon="mdi-camera" class="input-custom mt-3" />
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" class="d-flex justify-center">
+              <p v-if="uploadedFileName">이미지 파일 이름 {{ uploadedFileName }}</p>
+            </v-col>
+          </v-row>
+        </div>
+      </v-col>
+    </v-row>
+    <v-icon class="left-arrow" @click="previousStep" v-if="step > 1">mdi-chevron-left</v-icon>
+    <v-icon class="right-arrow" @click="handleNextClick">
+      {{ step === 2 ? 'mdi-check' : 'mdi-chevron-right' }}
+    </v-icon>
+  </v-container>
 </template>
 
 <script>
@@ -38,78 +60,201 @@ import { mapActions } from 'vuex'
 const reviewModule = 'reviewModule'
 
 export default {
-  data () {
+  data() {
     return {
       title: '',
       writer: '',
       content: '',
-      rating: 0 // 추가된 부분
+      rating: 0,
+      reviewImage: null,
+      uploadedFileName: '',
+      hoverRating: 0,
+      step: 1,
+      fullText: '별점을 선택해 주세요.',
+      displayedText: '',
+      showCursor: true,
+      showStars: 0,
+      starsDisplayed: false
     }
+  },
+  mounted() {
+    if (this.step === 1) {
+      this.typeText()
+    }
+    setInterval(() => {
+      this.showCursor = !this.showCursor
+    }, 500)
   },
   methods: {
     ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
-    async onSubmit () {
-      const payload = {
-        title: this.title,
-        writer: this.writer,
-        content: this.content,
-        rating: this.rating // 추가된 부분
+    typeText() {
+      if (this.starsDisplayed) {
+        return;
       }
-      await this.requestCreateReviewToDjango(payload)
-      this.$router.push({ name: 'ReviewListPage' }) // 리뷰 리스트 페이지로 이동
+
+      this.displayedText = '';
+      let index = 0
+      const typingInterval = setInterval(() => {
+        if (index < this.fullText.length) {
+          this.displayedText += this.fullText.charAt(index)
+          index++
+        } else {
+          clearInterval(typingInterval)
+          this.showStarIncrementally()
+        }
+      }, 100)
     },
-    onCancel () {
-      this.$router.push({ name: 'ReviewListPage' })
+    showStarIncrementally() {
+      if (this.starsDisplayed) {
+        return;
+      }
+
+      let starCount = 0
+      const starInterval = setInterval(() => {
+        if (starCount < 5) {
+          starCount++
+          this.showStars = starCount
+        } else {
+          clearInterval(starInterval)
+          this.starsDisplayed = true; // 별이 모두 표시되었음을 추적
+        }
+      }, 200)
+    },
+    nextStep() {
+      if (this.step === 1) {
+        this.showStars = 0
+        this.starsDisplayed = false;
+      }
+      this.step++
+      if (this.step === 1) {
+        this.typeText()
+      }
+      if (this.step === 2) {
+        this.showStars = 0
+      }
+    },
+    previousStep() {
+      this.step--
+      if (this.step === 1) {
+        this.starsDisplayed = false; // step 변경 시 별 표시 상태 초기화
+        this.showStars = 0; // 별의 표시 상태 초기화
+        this.typeText(); // 별점 텍스트와 별을 다시 표시
+      }
+    },
+    async onSubmit() {
+      try {
+          if (this.reviewImage) {
+              const imageFormData = new FormData()
+              imageFormData.append('title', this.title)
+              imageFormData.append('writer', this.writer)
+              imageFormData.append('content', this.content)
+              imageFormData.append('rating', this.rating)
+              imageFormData.append('reviewImage', this.reviewImage)
+
+              const response = await this.requestCreateReviewToDjango(imageFormData)
+              this.uploadedFileName = response.data.imageName
+              this.$router.push({ name: 'ReviewListPage' })
+          } else {
+              console.log('이미지 파일을 선택하세요')
+          }
+      } catch (error) {
+          console.log('파일 처리 과정에서 에러 발생:', error)
+      }
+    },
+    handleNextClick() {
+      if (this.step === 2) {
+        this.onSubmit()
+      } else {
+        this.nextStep()
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+.container {
+  position: relative;
+  height: 100vh;
+}
+
+.full-height {
+  height: 100%;
+}
+
 .card-custom {
-    background-color: #2c2c2c;
-    color: #fff;
-    border-radius: 8px;
-    padding: 16px;
+  background-color: #2c2c2c;
+  color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .input-custom {
-    background-color: #3c3c3c;
-    color: #fff;
-    border-radius: 4px;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 4px;
+  width: 100%;
+  margin: 0;
 }
 
-.input-custom .v-label {
-    color: #bdbdbd;
+.left-arrow, .right-arrow {
+  font-size: 3rem;
+  cursor: pointer;
+  color: #000000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.btn-custom {
-    color: #fff;
-    margin: 0 8px;
-    transition: background-color 0.3s ease;
+.left-arrow {
+  left: 16px;
 }
 
-.btn-custom:hover {
-    background-color: #fff;
+.right-arrow {
+  right: 16px;
 }
 
-.btn-custom:hover .v-icon {
-    color: #000;
+.left-arrow:hover, .right-arrow:hover {
+  color: #4caf50;
 }
 
 .icon-green {
-    color: #4caf50; /* 초록색 */
+  color: #4caf50;
 }
 
-.icon-red {
-    color: #f05650;
+.rating-text {
+  color: #000000;
+  margin-bottom: 16px;
+  font-size: 1.5em;
+  text-align: center;
 }
 
-.v-icon {
-    font-size: 24px; /* 아이콘 두께 증가 */
+.cursor {
+  display: inline-block;
+  background-color: #000;
+  animation: blink 1s step-end infinite;
 }
 
-.v-rating {
-  color: #FFBF00;
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.stars-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.star {
+  font-size: 2rem;
+  margin: 0 15px; /* 별 사이 간격 조절 */
+  cursor: pointer;
+  transition: color 0.3s;
 }
 </style>
