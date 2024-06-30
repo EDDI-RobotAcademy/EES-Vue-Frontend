@@ -57,10 +57,8 @@ export default {
         ...mapState(boardModule, ['board'])
     },
     methods: {
-        // 'requestDeleteBoardToDjango' 추후 처리 필요
         ...mapActions(boardModule, ['requestBoardToDjango', 'requestDeleteBoardToDjango']),
         async onDelete() {
-            console.log('삭제를 누르셨습니다!')
             await this.requestDeleteBoardToDjango(this.board_id)
             await this.$router.push({ name: 'BoardListPage' })
         },

@@ -15,7 +15,7 @@ export type BoardActions = {
     requestModifyBoardToDjango(context: ActionContext<BoardState, any>, payload: {
         title: string, content: string, board_id: number
     }): Promise<void>
-    requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, boardId: number): Promise<void>
+    requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, board_id: number): Promise<void>
 }
 
 const actions: BoardActions = {
@@ -29,7 +29,7 @@ const actions: BoardActions = {
             const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/board/register', { title, writer, content })
             return res.data
         } catch (error) {
-            alert('게시글 등록 실패.')
+            console.log('requestCreateBoardToDjango() error')
             throw error
         }
     },
@@ -40,6 +40,7 @@ const actions: BoardActions = {
             const data: Board[] = res.data;
             context.commit('REQUEST_BOARD_LIST_TO_DJANGO', data);
         } catch (error) {
+            console.log('requestBoardListToDjango() error')
             throw error
         }
     },
@@ -49,6 +50,7 @@ const actions: BoardActions = {
             const res: AxiosResponse<Board> = await axiosInst.djangoAxiosInst.get(`/board/read/${board_id}`);
             context.commit('REQUEST_BOARD_TO_DJANGO', res.data);
         } catch (error) {
+            console.log('requestBoardToDjango() error')
             throw error
         }
     },
@@ -62,15 +64,17 @@ const actions: BoardActions = {
         try {
             await axiosInst.djangoAxiosInst.put(`/board/modify/${board_id}`, { title, content })
         } catch (error) {
+            console.log('requestModifyBoardToDjango() error')
             throw error
         }
     },
 
-    async requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, boardId: number): Promise<void> {
+    async requestDeleteBoardToDjango(context: ActionContext<BoardState, unknown>, board_id: number): Promise<void> {
         try {
             console.log('requestDeleteBoardToDjango()')
-            await axiosInst.djangoAxiosInst.delete(`/board/delete/${boardId}`)
+            await axiosInst.djangoAxiosInst.delete(`/board/delete/${board_id}`)
         } catch (error) {
+            console.log('requestDeleteBoardToDjango() error')
             throw error
         }
     },

@@ -59,7 +59,6 @@ export default {
             await this.$router.push({
                 name: 'BoardListPage'
             })
-            console.log('TODO: push to read page')
         }
     }
 }

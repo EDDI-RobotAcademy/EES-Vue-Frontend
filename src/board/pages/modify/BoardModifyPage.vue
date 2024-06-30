@@ -43,7 +43,7 @@ const boardModule = 'boardModule'
 
 export default {
     props: {
-        boardId: {
+        board_id: {
             type: String,
             required: true,
         }
@@ -64,18 +64,18 @@ export default {
             const payload = {
                 title: this.title,
                 content: this.content,
-                boardId: this.boardId,
+                board_id: this.board_id,
             }
 
             await this.requestModifyBoardToDjango(payload)
             await this.$router.push({
                 name: 'BoardReadPage',
-                params: { boardId: this.boardId }
+                params: { board_id: this.board_id }
             })
         },
     },
     created() {
-        this.requestBoardToDjango(this.boardId).then(() => {
+        this.requestBoardToDjango(this.board_id).then(() => {
             this.title = this.board.title
             this.writer = this.board.writer
             this.content = this.board.content

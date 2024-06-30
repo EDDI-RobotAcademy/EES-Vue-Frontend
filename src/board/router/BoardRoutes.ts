@@ -26,7 +26,7 @@ const BoardRoutes = [
         }
     },
     {
-        path: '/board/modify/:boardId',
+        path: '/board/modify/:board_id',
         name: 'BoardModifyPage',
         components: {
             default: BoardModifyPage,

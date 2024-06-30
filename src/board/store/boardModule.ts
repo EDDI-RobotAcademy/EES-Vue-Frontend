@@ -4,14 +4,14 @@ import state, { BoardState } from './states'
 
 
 export interface BoardModule {
-    namedspaced: true
+    namespaced: true
     state: BoardState
     actions: BoardActions
     mutations: BoardMutations
 }
 
 const boardModule: BoardModule = {
-    namedspaced: true,
+    namespaced: true,
     state,
     actions,
     mutations
