@@ -34,6 +34,16 @@
               <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3" />
             </v-col>
           </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-file-input v-model="reviewImage" label="이미지 파일" prepend-icon="mdi-camera" class="input-custom mt-3" />
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" class="d-flex justify-center">
+              <p v-if="uploadedFileName">이미지 파일 이름 {{ uploadedFileName }}</p>
+            </v-col>
+          </v-row>
         </div>
       </v-col>
     </v-row>
@@ -52,18 +62,19 @@ const reviewModule = 'reviewModule'
 export default {
   data() {
     return {
-      product: '',
       title: '',
       writer: '',
       content: '',
       rating: 0,
+      reviewImage: null,
+      uploadedFileName: '',
       hoverRating: 0,
-      step: 1, // 초기 step을 1로 설정
+      step: 1,
       fullText: '별점을 선택해 주세요.',
       displayedText: '',
       showCursor: true,
       showStars: 0,
-      starsDisplayed: false // 별이 이미 표시되었는지를 추적하는 상태 변수
+      starsDisplayed: false
     }
   },
   mounted() {
@@ -72,16 +83,16 @@ export default {
     }
     setInterval(() => {
       this.showCursor = !this.showCursor
-    }, 500) // 커서 깜빡임 간격 설정
+    }, 500)
   },
   methods: {
     ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
     typeText() {
       if (this.starsDisplayed) {
-        return; // 별이 이미 표시되었으면 함수 종료
+        return;
       }
 
-      this.displayedText = ''; // displayedText 초기화
+      this.displayedText = '';
       let index = 0
       const typingInterval = setInterval(() => {
         if (index < this.fullText.length) {
@@ -91,11 +102,11 @@ export default {
           clearInterval(typingInterval)
           this.showStarIncrementally()
         }
-      }, 100) // 각 글자가 100ms 간격으로 나타나게 설정
+      }, 100)
     },
     showStarIncrementally() {
       if (this.starsDisplayed) {
-        return; // 별이 이미 표시되었으면 함수 종료
+        return;
       }
 
       let starCount = 0
@@ -107,16 +118,14 @@ export default {
           clearInterval(starInterval)
           this.starsDisplayed = true; // 별이 모두 표시되었음을 추적
         }
-      }, 300) // 각 별이 300ms 간격으로 나타나게 설정
+      }, 200)
     },
     nextStep() {
-      console.log('Next Step called. Current step:', this.step); // 디버깅용 로그 추가
       if (this.step === 1) {
         this.showStars = 0
-        this.starsDisplayed = false; // step 변경 시 별 표시 상태 초기화
+        this.starsDisplayed = false;
       }
       this.step++
-      console.log('Step increased. New step:', this.step); // 디버깅용 로그 추가
       if (this.step === 1) {
         this.typeText()
       }
@@ -133,16 +142,24 @@ export default {
       }
     },
     async onSubmit() {
-      const payload = {
-        product: this.product,
-        title: this.title,
-        writer: this.writer,
-        content: this.content,
-        rating: this.rating
+      try {
+          if (this.reviewImage) {
+              const imageFormData = new FormData()
+              imageFormData.append('title', this.title)
+              imageFormData.append('writer', this.writer)
+              imageFormData.append('content', this.content)
+              imageFormData.append('rating', this.rating)
+              imageFormData.append('reviewImage', this.reviewImage)
+
+              const response = await this.requestCreateReviewToDjango(imageFormData)
+              this.uploadedFileName = response.data.imageName
+              this.$router.push({ name: 'ReviewListPage' })
+          } else {
+              console.log('이미지 파일을 선택하세요')
+          }
+      } catch (error) {
+          console.log('파일 처리 과정에서 에러 발생:', error)
       }
-      console.log('Submitting form with payload:', payload); // 디버깅용 로그 추가
-      await this.requestCreateReviewToDjango(payload)
-      this.$router.push({ name: 'ReviewListPage' })
     },
     handleNextClick() {
       if (this.step === 2) {
@@ -178,15 +195,11 @@ export default {
 }
 
 .input-custom {
-  background-color: #3c3c3c;
-  color: #fff;
+  background-color: #ffffff;
+  color: #000000;
   border-radius: 4px;
   width: 100%;
   margin: 0;
-}
-
-.full-width {
-  width: 80% !important; /* 너비를 80%로 설정하고 우선순위를 높임 */
 }
 
 .left-arrow, .right-arrow {
@@ -215,13 +228,6 @@ export default {
 }
 
 .rating-text {
-  color: #000000;
-  margin-bottom: 16px;
-  font-size: 1.5em;
-  text-align: center;
-}
-
-.product-text {
   color: #000000;
   margin-bottom: 16px;
   font-size: 1.5em;
