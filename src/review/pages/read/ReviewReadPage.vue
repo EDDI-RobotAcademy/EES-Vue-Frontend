@@ -20,7 +20,7 @@
           {{ review.content }}
         </v-card-text>
       </v-card>
-      <v-icon class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
+      <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
     </div>
     <router-link class="floating-button" :to="{ name: 'ReviewListPage' }">
       <v-icon color="white">mdi-undo</v-icon>
@@ -41,34 +41,63 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      showNextArrow: true,
+    };
+  },
   computed: {
     ...mapState(reviewModule, ['review']),
   },
   methods: {
     ...mapActions(reviewModule, ['requestReviewToDjango']),
     navigateToPrevious() {
-      const previousId = Number(this.reviewId) - 1;
+      const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
         this.$router.push(`/review/read/${previousId}`);
       }
     },
-    navigateToNext() {
-      const nextId = Number(this.reviewId) + 1;
-      this.$router.push(`/review/read/${nextId}`);
+    async navigateToNext() {
+      const nextId = Number(this.reviewId) - 1;
+      if (nextId <= 0) {
+        this.showNextArrow = false;
+        return;
+      }
+      const review = await this.requestReviewToDjango(nextId);
+      if (!review || !review.reviewImage) {
+        this.showNextArrow = false;
+        this.$router.push(`/review/read/${this.reviewId-1}`);
+      } else {
+        this.showNextArrow = true;
+        this.$router.push(`/review/read/${nextId+1}`);
+      }
     },
     getReviewImageUrl(imageName) {
       console.log('imageName:', imageName);
-      return require(`@/assets/images/reviewImages/${imageName}`);
+      if (imageName) {
+        return require(`@/assets/images/reviewImages/${imageName}`);
+      }
+      return null;
     },
   },
-  watch: {
-    reviewId(newId) {
-      this.requestReviewToDjango(newId);
+  async created() {
+    const review = await this.requestReviewToDjango(this.reviewId);
+    if (this.reviewId == 1) {
+      this.showNextArrow = false;
+    } else {
+      this.showNextArrow = true;
     }
   },
-  created() {
-    this.requestReviewToDjango(this.reviewId);
-  },
+  watch: {
+    async reviewId(newId) {
+      const review = await this.requestReviewToDjango(newId);
+      if (newId == 1) {
+        this.showNextArrow = false;
+      } else {
+        this.showNextArrow = true;
+      }
+    }
+  }
 }
 </script>
 
