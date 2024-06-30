@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="login-background">
         <v-card flat class="pa-4">
             <v-form ref="form">
                 <v-text-field
@@ -71,11 +71,51 @@ export default {
 }
 </script>
 
+// url('@/assets/images/fixed/runner.png');
+
 <style scoped>
 .v-container {
-    max-width: 400px;
+    max-width: 100%;
+    height: 100%;
     margin: auto;
     padding-top: 100px;
+}
+
+.login-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-image: url('@/assets/images/fixed/login1.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.login-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 0;
+}
+
+.v-card {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    min-width: 400px;
+    min-height: 500px;
+    padding: 20px;
+    border-top-width: 50px;    
+    border-radius: 20px;
 }
 
 .find-id-pw-options {
@@ -86,7 +126,11 @@ export default {
 
 .find-id-pw-separator {
     margin: 0 8px;
-    color: #000000;
+    color: #ffffff;
+}
+
+.option-text {
+    color: #ffffff;
 }
 
 .custom-link {
