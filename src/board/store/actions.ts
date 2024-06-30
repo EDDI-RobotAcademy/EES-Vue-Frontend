@@ -12,6 +12,9 @@ export type BoardActions = {
     }): Promise<AxiosResponse>
     requestBoardListToDjango(context: ActionContext<BoardState, any>): Promise<void>
     requestBoardToDjango(context: ActionContext<BoardState, any>, board_id: number): Promise<void>
+    requestModifyBoardToDjango(context: ActionContext<BoardState, any>, payload: {
+        title: string, content: string, board_id: number
+    }): Promise<void>
 }
 
 const actions: BoardActions = {
@@ -36,7 +39,6 @@ const actions: BoardActions = {
             const data: Board[] = res.data;
             context.commit('REQUEST_BOARD_LIST_TO_DJANGO', data);
         } catch (error) {
-            console.error('Error fetching board list:', error);
             throw error
         }
     },
@@ -46,10 +48,22 @@ const actions: BoardActions = {
             const res: AxiosResponse<Board> = await axiosInst.djangoAxiosInst.get(`/board/read/${board_id}`);
             context.commit('REQUEST_BOARD_TO_DJANGO', res.data);
         } catch (error) {
-            console.error('Error fetching board:', error)
             throw error
         }
     },
+
+    async requestModifyBoardToDjango(context: ActionContext<BoardState, any>, payload: {
+        title: string, content: string, board_id: number
+    }): Promise<void> {
+
+        const { title, content, board_id } = payload
+
+        try {
+            await axiosInst.djangoAxiosInst.put(`/board/modify/${board_id}`, { title, content })
+        } catch (error) {
+            throw error
+        }
+    }
 }
 
 export default actions

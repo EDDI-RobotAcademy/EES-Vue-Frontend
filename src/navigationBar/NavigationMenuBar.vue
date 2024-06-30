@@ -11,7 +11,7 @@
     <v-btn text @click="goToProductList" class="btn-text">
       <span>PRODUCTS</span>
     </v-btn>
-    <v-btn text class="btn-text">
+    <v-btn text @click="goToCommunityList" class="btn-text">
       <span>COMMUNITY</span>
     </v-btn>
     <v-btn text @click="goToReviewList" class="btn-text">
@@ -43,8 +43,8 @@ export default {
     };
   },
   computed: {
-        ...mapState(authenticationModule, ['isAuthenticated'])
-    },
+    ...mapState(authenticationModule, ['isAuthenticated'])
+  },
   methods: {
     ...mapActions(authenticationModule, ['requestLogoutToDjango']),
     goToHome() {
@@ -54,7 +54,7 @@ export default {
       router.push("/product/list");
     },
     goToCommunityList() {
-      router.push("/community/list");
+      router.push("/board/list");
     },
     goToReviewList() {
       router.push("/review/list");
@@ -70,14 +70,14 @@ export default {
       router.push('/')
     },
   },
-  mounted () {
-        console.log('navigation bar mounted()')
-        const userToken = localStorage.getItem("userToken")
-        if (userToken) {
-            console.log('You already has a userToken!')
-            this.$store.state.authenticationModule.isAuthenticated = true
-        }
+  mounted() {
+    console.log('navigation bar mounted()')
+    const userToken = localStorage.getItem("userToken")
+    if (userToken) {
+      console.log('You already has a userToken!')
+      this.$store.state.authenticationModule.isAuthenticated = true
     }
+  }
 };
 </script>
 
@@ -93,7 +93,8 @@ export default {
 }
 
 .mdi-icon {
-  font-size: 32px; /* 아이콘 크기 설정 */
+  font-size: 32px;
+  /* 아이콘 크기 설정 */
   margin-right: 8px;
 }
 
@@ -108,10 +109,12 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
+  background-color: rgba(255, 255, 255, 0.2);
+  /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
 }
 
 .v-btn:hover .btn-text {
-  color: black; /* 마우스를 올렸을 때 텍스트 색상 변경 */
+  color: black;
+  /* 마우스를 올렸을 때 텍스트 색상 변경 */
 }
 </style>
