@@ -11,6 +11,7 @@ export type BoardActions = {
         content: string,
     }): Promise<AxiosResponse>
     requestBoardListToDjango(context: ActionContext<BoardState, any>): Promise<void>
+    requestBoardToDjango(context: ActionContext<BoardState, any>, board_id: number): Promise<void>
 }
 
 const actions: BoardActions = {
@@ -27,6 +28,8 @@ const actions: BoardActions = {
             alert('게시글 등록 실패.')
             throw error
         }
+    },
+
     async requestBoardListToDjango(context: ActionContext<BoardState, any>): Promise<void> {
         try {
             const res: AxiosResponse<any, any> = await axiosInst.djangoAxiosInst.get('/board/list/');
@@ -34,6 +37,16 @@ const actions: BoardActions = {
             context.commit('REQUEST_BOARD_LIST_TO_DJANGO', data);
         } catch (error) {
             console.error('Error fetching board list:', error);
+            throw error
+        }
+    },
+
+    async requestBoardToDjango(context: ActionContext<BoardState, any>, board_id: number): Promise<void> {
+        try {
+            const res: AxiosResponse<Board> = await axiosInst.djangoAxiosInst.get(`/board/read/${board_id}`);
+            context.commit('REQUEST_BOARD_TO_DJANGO', res.data);
+        } catch (error) {
+            console.error('Error fetching board:', error)
             throw error
         }
     },

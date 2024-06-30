@@ -49,7 +49,11 @@ export default {
 
             const board = await this.requestCreateBoardToDjango(payload)
 
-            // TODO: push to list page
+            await this.$router.push({
+                name: 'BoardReadPage',
+                params: { board_id: board.board_id.toString() }
+
+            })
         },
         async onCancel() {
             await this.$router.push({
