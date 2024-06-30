@@ -1,28 +1,20 @@
 export interface ReviewState {
-    reviews: Review[];
-    review: Review | null;
-    pagedItems: {
-        page: number;
-        items: Review[];
-    };
+    reviewList: Review[]
+    review: Review | null
 }
 
 export interface Review {
-    reviewId: number;
-    title: string;
-    writer: string;
-    content: string;
-    regDate: string;
-    updDate: string;
+    reviewId: number
+    title: string
+    writer: string
+    content: string
+    registeredDate: string
+    updatedDate: string
 }
 
 const state: ReviewState = {
-    reviews: [],
+    reviewList: [],
     review: null,
-    pagedItems: {
-        page: 1,
-        items: []
-    }
 }
 
-export default state;
+export default state
