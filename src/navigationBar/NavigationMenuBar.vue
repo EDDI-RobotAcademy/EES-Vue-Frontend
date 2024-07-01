@@ -32,30 +32,40 @@
       <v-icon left>mdi-receipt</v-icon>
       <span>Order</span>
     </v-btn>
-
+    
     <v-menu close-on-content-click>
         <template v-slot:activator="{ props }">
-            <v-btn color="rgb(83, 83, 83)" v-bind="props" class="btn-text">
+            <v-btn v-bind="props" class="btn-text">
                 <span class="mdi mdi-file-chart"></span>
                 <b>Report</b>
             </v-btn>
         </template>
         <v-list>
-            <v-list-item v-for="(item, index) in items"
+            <v-list-item v-for="(item, index) in reportItems"
                           :key="index" @click="item.action">
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
         </v-list>
     </v-menu>   
 
+    <v-menu v-if="isAuthenticated" close-on-content-click>
+            <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" class="btn-text">
+                    <v-icon left>mdi-account</v-icon>
+                    <b>My Page</b>
+                </v-btn>
+            </template>
+            <v-list>
+                <v-list-item v-for="(item, index) in myPageItems"
+                             :key="index" @click="item.action">
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-menu>
+
     <v-btn v-if="!isAuthenticated" text @click="signIn" class="btn-text">
       <v-icon left>mdi-login</v-icon>
       <span>LOGIN</span>
-    </v-btn>
-
-    <v-btn v-if="isAuthenticated" text @click="signOut" class="btn-text">
-      <v-icon left>mdi-logout</v-icon>
-      <span>LOGOUT</span>
     </v-btn>
 
   </v-app-bar>
@@ -70,7 +80,15 @@ const authenticationModule = 'authenticationModule'
 export default {
   data() {
     return {
-    };
+      reportItems: [
+                { title: '구매 동향', action: () => { this.goToHome() } },
+                { title: '회원 이탈', action: () => { this.goToHome() } },
+      ],
+      myPageItems: [
+                { title: 'MY PAGE', action: () => { this.goToMyPage() } },
+                { title: 'LOGOUT', action: () => { this.signOut() } },
+            ]
+    }
   },
   computed: {
         ...mapState(authenticationModule, ['isAuthenticated'])
@@ -100,13 +118,13 @@ export default {
       router.push('/')
     },
     goToCart () {
-            router.push('/cart/list')
+      router.push('/cart/list')
     },
     goToOrder () {
         router.push('/order')
     },
-    goToPostPage () {
-        router.push('/post/list')
+    goToMyPage () {
+        router.push('/mypage')
     },
   },
   mounted () {
