@@ -134,12 +134,12 @@ export default {
 }
 
 .custom-link {
-  color: black;
+  color: white;
   text-decoration: none; /* 링크 밑줄 없애기 */
 }
 
 .custom-link:hover {
-  color: black; /* 링크를 마우스로 가리킬 때도 검정색 유지 */
+  color: white; /* 링크를 마우스로 가리킬 때도 검정색 유지 */
   text-decoration: none; /* 링크를 마우스로 가리킬 때도 밑줄 없애기 */
 }
 </style>
