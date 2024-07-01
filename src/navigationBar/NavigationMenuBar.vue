@@ -11,9 +11,8 @@
     <v-btn text @click="goToProductList" class="btn-text">      
       <span class="mdi mdi-shoe-formal"></span>
       <span>PRODUCTS</span>
-    </v-btn>    
-
-    <v-btn text class="btn-text">
+      
+    <v-btn text @click="goToCommunityList" class="btn-text">
       <span class="mdi mdi-account-group-outline"></span>
       <span>COMMUNITY</span>
     </v-btn>
@@ -73,8 +72,8 @@ export default {
     };
   },
   computed: {
-        ...mapState(authenticationModule, ['isAuthenticated'])
-    },
+    ...mapState(authenticationModule, ['isAuthenticated'])
+  },
   methods: {
     ...mapActions(authenticationModule, ['requestLogoutToDjango']),
     goToHome() {
@@ -87,7 +86,7 @@ export default {
       router.push("/product/list");
     },
     goToCommunityList() {
-      router.push("/community/list");
+      router.push("/board/list");
     },
     goToReviewList() {
       router.push("/review/list");
@@ -109,14 +108,14 @@ export default {
         router.push('/post/list')
     },
   },
-  mounted () {
-        console.log('navigation bar mounted()')
-        const userToken = localStorage.getItem("userToken")
-        if (userToken) {
-            console.log('You already has a userToken!')
-            this.$store.state.authenticationModule.isAuthenticated = true
-        }
+  mounted() {
+    console.log('navigation bar mounted()')
+    const userToken = localStorage.getItem("userToken")
+    if (userToken) {
+      console.log('You already has a userToken!')
+      this.$store.state.authenticationModule.isAuthenticated = true
     }
+  }
 };
 </script>
 
@@ -132,7 +131,8 @@ export default {
 }
 
 .mdi-icon {
-  font-size: 32px; /* 아이콘 크기 설정 */
+  font-size: 32px;
+  /* 아이콘 크기 설정 */
   margin-right: 8px;
 }
 
