@@ -153,7 +153,8 @@ export default {
 
               const response = await this.requestCreateReviewToDjango(imageFormData)
               this.uploadedFileName = response.data.imageName
-              this.$router.push({ name: 'ReviewListPage' })
+              await this.$router.push({ name: 'ReviewListPage' });
+              window.location.reload(true);
           } else {
               console.log('이미지 파일을 선택하세요')
           }

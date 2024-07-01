@@ -9,14 +9,18 @@
         <v-card-subtitle class="subtitle-section">
           {{ review.writer }}
         </v-card-subtitle>
-        <div class="image-placeholder">
-          이미지 구현 예정
-        </div>
+        <v-img :src="getReviewImageUrl(review.reviewImage)" aspect-ratio="1" class="image-placeholder">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="grey lighten-5"/>
+            </v-row>
+          </template>
+        </v-img>
         <v-card-text class="content-section">
           {{ review.content }}
         </v-card-text>
       </v-card>
-      <v-icon class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
+      <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
     </div>
     <router-link class="floating-button" :to="{ name: 'ReviewListPage' }">
       <v-icon color="white">mdi-undo</v-icon>
@@ -29,6 +33,7 @@ import { mapActions, mapState } from 'vuex'
 import '@mdi/font/css/materialdesignicons.css'
 
 const reviewModule = 'reviewModule'
+
 export default {
   props: {
     reviewId: {
@@ -36,30 +41,63 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      showNextArrow: true,
+    };
+  },
   computed: {
     ...mapState(reviewModule, ['review']),
   },
   methods: {
     ...mapActions(reviewModule, ['requestReviewToDjango']),
     navigateToPrevious() {
-      const previousId = Number(this.reviewId) - 1;
+      const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
         this.$router.push(`/review/read/${previousId}`);
       }
     },
-    navigateToNext() {
-      const nextId = Number(this.reviewId) + 1;
-      this.$router.push(`/review/read/${nextId}`);
+    async navigateToNext() {
+      const nextId = Number(this.reviewId) - 1;
+      if (nextId <= 0) {
+        this.showNextArrow = false;
+        return;
+      }
+      const review = await this.requestReviewToDjango(nextId);
+      if (!review || !review.reviewImage) {
+        this.showNextArrow = false;
+        this.$router.push(`/review/read/${this.reviewId-1}`);
+      } else {
+        this.showNextArrow = true;
+        this.$router.push(`/review/read/${nextId+1}`);
+      }
+    },
+    getReviewImageUrl(imageName) {
+      console.log('imageName:', imageName);
+      if (imageName) {
+        return require(`@/assets/images/reviewImages/${imageName}`);
+      }
+      return null;
     },
   },
-  watch: {
-    reviewId(newId) {
-      this.requestReviewToDjango(newId);
+  async created() {
+    const review = await this.requestReviewToDjango(this.reviewId);
+    if (this.reviewId == 1) {
+      this.showNextArrow = false;
+    } else {
+      this.showNextArrow = true;
     }
   },
-  created() {
-    this.requestReviewToDjango(this.reviewId)
-  },
+  watch: {
+    async reviewId(newId) {
+      const review = await this.requestReviewToDjango(newId);
+      if (newId == 1) {
+        this.showNextArrow = false;
+      } else {
+        this.showNextArrow = true;
+      }
+    }
+  }
 }
 </script>
 
@@ -70,7 +108,7 @@ export default {
   align-items: center;
   width: 100%;
   max-width: 800px;
-  margin: 40px auto; /* 상단 네비게이션바와 거리 조정 */
+  margin: 40px auto;
 }
 
 .question-card {
@@ -78,7 +116,7 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 네비게이션바와 카드 사이 거리 조정 */
+  margin-top: 20px;
 }
 
 .image-placeholder {
@@ -87,7 +125,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #757575;
   font-size: 1.2rem;
 }
 

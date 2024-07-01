@@ -6,28 +6,57 @@
         <span> IT, SHOE</span>
       </v-btn>
     </v-toolbar-title>
-    <v-spacer></v-spacer>
+    <v-spacer></v-spacer>    
 
-    <v-btn text @click="goToProductList" class="btn-text">
+    <v-btn text @click="goToProductList" class="btn-text">      
+      <span class="mdi mdi-shoe-formal"></span>
       <span>PRODUCTS</span>
-    </v-btn>
+      
     <v-btn text @click="goToCommunityList" class="btn-text">
+      <span class="mdi mdi-account-group-outline"></span>
       <span>COMMUNITY</span>
     </v-btn>
+
     <v-btn text @click="goToReviewList" class="btn-text">
+      <span class="mdi mdi-star-box"></span>
       <span>REVIEW</span>
+    </v-btn> 
+
+    <v-btn v-if="isAuthenticated" text @click="goToCart" class="btn-text">
+      <span class="mdi mdi-cart-outline"></span>
+      <span>Cart</span>
     </v-btn>
-    <v-btn text @click="goToContact" class="btn-text">
-      <span>CONTACT</span>
+
+    <v-btn v-if="isAuthenticated" text @click="goToOrder" class="btn-text">
+      <v-icon left>mdi-receipt</v-icon>
+      <span>Order</span>
     </v-btn>
+
+    <v-menu close-on-content-click>
+        <template v-slot:activator="{ props }">
+            <v-btn color="rgb(83, 83, 83)" v-bind="props" class="btn-text">
+                <span class="mdi mdi-file-chart"></span>
+                <b>Report</b>
+            </v-btn>
+        </template>
+        <v-list>
+            <v-list-item v-for="(item, index) in items"
+                          :key="index" @click="item.action">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+        </v-list>
+    </v-menu>   
+
     <v-btn v-if="!isAuthenticated" text @click="signIn" class="btn-text">
       <v-icon left>mdi-login</v-icon>
       <span>LOGIN</span>
     </v-btn>
+
     <v-btn v-if="isAuthenticated" text @click="signOut" class="btn-text">
       <v-icon left>mdi-logout</v-icon>
       <span>LOGOUT</span>
     </v-btn>
+
   </v-app-bar>
 </template>
 
@@ -50,6 +79,9 @@ export default {
     goToHome() {
       router.push("/");
     },
+    goToReport() {
+      router.push("/report");
+    },
     goToProductList() {
       router.push("/product/list");
     },
@@ -58,16 +90,22 @@ export default {
     },
     goToReviewList() {
       router.push("/review/list");
-    },
-    goToContact() {
-      router.push("/contact");
-    },
+    },    
     signIn() {
       router.push("/account/login");
     },
     signOut() {
       this.requestLogoutToDjango()
       router.push('/')
+    },
+    goToCart () {
+            router.push('/cart/list')
+    },
+    goToOrder () {
+        router.push('/order')
+    },
+    goToPostPage () {
+        router.push('/post/list')
     },
   },
   mounted() {
@@ -99,9 +137,9 @@ export default {
 }
 
 .btn-text {
-  font-size: 18px;
+  font-size: 14px;
   margin-right: 16px;
-  color: white;
+  color: rgb(83, 83, 83);
 }
 
 .v-btn {
@@ -109,12 +147,19 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  /* 선택된 효과를 나타내기 위해 배경색을 변경합니다. */
+  background-color: rgba(170, 255, 0, 0.233); /* 마우스오버시 hover 효과 */
 }
 
 .v-btn:hover .btn-text {
-  color: black;
-  /* 마우스를 올렸을 때 텍스트 색상 변경 */
+  color: white; 
+}
+
+.v-btn:focus {
+  background-color: rgba(170, 255, 0, 0.233); /* 클릭해서 선택되었을시 표시 */
+  color: white
+}
+
+.v-btn:focus .btn-text {
+  color: white
 }
 </style>
